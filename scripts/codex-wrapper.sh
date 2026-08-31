@@ -5,6 +5,7 @@ set -euo pipefail
 PERSIST="/mnt/codex-persist"
 LOCAL="$HOME/.codex"
 
+mkdir -p "$HOME/.local/share/log"
 log_file="$HOME/.local/share/log/codex-wrapper_$(date '+%Y%m%d_%H%M%S').log"
 
 # Functions

@@ -3,7 +3,9 @@ set -euo pipefail
 
 # Variables
 VM_NAME="codex-dev-vm"
-PROFILE="codex-dev"
+IMAGE="images:archlinux/current"
+
+
 
 STORAGE_POOL="default"
 AUTH_VOLUME="codex-auth"
@@ -11,6 +13,8 @@ AUTH_DEVICE="codex-persist"
 AUTH_MOUNT="/mnt/codex-persist"
 
 SCRIPT_DIR="$(cd -- $(dirname -- "${BASH_SOURCE[0]}");pwd)"
+REPO_DIR="$(cd -- $SCRIPT_DIR/..;pwd)"
+VM_CONFIG="${REPO_DIR}/incus/codex-dev.yaml"
 
 BOOTSTRAP="${SCRIPT_DIR}/bootstrap.sh"
 WRAPPER="${SCRIPT_DIR}/codex-wrapper.sh"
@@ -48,12 +52,6 @@ if incus info "$VM_NAME" > /dev/null 2>&1; then
     exit 1
 fi
 
-if ! incus profile show "$PROFILE" > /dev/null 2>&1; then
-    error "Profile '$PROFILE' does not exist."
-    exit 1
-fi
-
-
 if ! incus storage volume show "$STORAGE_POOL" "$AUTH_VOLUME" > /dev/null 2>&1; then
     error "Volume '$AUTH_VOLUME' does not exist."
     exit 1
@@ -62,7 +60,7 @@ fi
 # Create VM
 log "INFO" "===Phase1: Create Archlinux VM==="
 
-incus launch images:archlinux/current "$VM_NAME" --vm --profile "$PROFILE"
+incus launch "$IMAGE" "$VM_NAME" --vm --no-profiles < "$VM_CONFIG"
 
 # Wait VM launch
 for _ in $(seq 1 60); do

@@ -11,7 +11,7 @@ DEV_GID="1000"
 # VM Workspace
 WORKSPACE="/workspace"
 
-log_file="$HOME/.local/share/log/bootstrap_$(date '+%Y%m%d_%H%M%S').log"
+log_file="/var/log/bootstrap_$(date '+%Y%m%d_%H%M%S').log"
 
 # Functions
 # Log output

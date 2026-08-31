@@ -1,0 +1,19 @@
+# Codex VM Profile
+description: Codex development VM
+
+config:
+  limits.cpu: "4"
+  limits.memory: 8GiB
+  security.secureboot: "false"
+
+devices:
+  eth0:
+    type: nic
+    name: eth0
+    network: incusbr0
+
+  root:
+    type: disk
+    path: /
+    pool: default
+    size: 40GiB
