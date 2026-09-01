@@ -47,7 +47,7 @@ STATE="$(incus list $VM_NAME --format csv --columns s)"
 if [[ "$STATE" == "RUNNING" ]]; then
     log "INFO" "===Syncing Codex credentials==="
 
-    if incus exec "$VM_NAME" -- findmnt -mountpoint "$PERSIST"; then
+    if incus exec "$VM_NAME" -- findmnt --mountpoint "$PERSIST"; then
         incus exec "$VM_NAME" -- su - dev -c '
             set -eu
 
