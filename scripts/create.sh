@@ -20,6 +20,7 @@ BOOTSTRAP="${SCRIPT_DIR}/bootstrap.sh"
 WRAPPER="${SCRIPT_DIR}/codex-wrapper.sh"
 MIRRORLIST="/etc/pacman.d/mirrorlist"
 
+mkdir -p "$HOME/.local/share/log"
 log_file="$HOME/.local/share/log/create_vm_$(date '+%Y%m%d_%H%M%S').log"
 
 # Functions
@@ -113,6 +114,11 @@ for _ in $(seq 1 60); do
 
     sleep 1
 done
+
+if ! incus exec "$VM_NAME" -- true > /dev/null 2>&1;then
+    error "VM did not become ready."
+    exit 1
+fi
 
 log "INFO" "===VM created successfully.==="
 

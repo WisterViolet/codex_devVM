@@ -7,7 +7,7 @@ VM_NAME="codex-dev-vm"
 LOCAL_CODEX="/home/dev/.codex"
 PERSIST="/mnt/codex-persist"
 
-
+mkdir -p "$HOME/.local/share/log"
 log_file="$HOME/.local/share/log/destroy_vm_$(date '+%Y%m%d_%H%M%S').log"
 
 # Functions
@@ -65,7 +65,8 @@ if [[ "$STATE" == "RUNNING" ]]; then
             done
         '
     else
-        log "WARN" "Persistent Codex volume i not mounted."
+        error "Persistent Codex volume not mounted."
+        exit 1
     fi
 
     log "INFO" "Stopping VM"

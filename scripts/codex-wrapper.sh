@@ -51,6 +51,7 @@ save(){
         chmod 600 "$tmp"
         mv -f "$tmp" "$PERSIST/$file"
     done
+    log "INFO" "===Save authentification==="
 }
 
 log "INFO" "===Restore authentification==="
@@ -60,10 +61,6 @@ restore
 trap 'save || true' EXIT
 
 /usr/bin/codex "$@"
-status=$?
-
-echo "$status"
-log "INFO" "===Save authentification==="
 
 exit "$status"
 
