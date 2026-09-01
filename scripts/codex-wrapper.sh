@@ -62,6 +62,3 @@ trap 'save || true' EXIT
 
 /usr/bin/codex "$@"
 
-exit "$status"
-
-
