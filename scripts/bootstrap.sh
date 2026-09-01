@@ -68,7 +68,7 @@ if id "$DEV_USER" > /dev/null; then
         error "user \"$DEV_USER\" has unexpected GID,"
         exit 1
     fi
-elif getent passwd "$DEV_GID" > /dev/null; then
+elif getent passwd "$DEV_UID" > /dev/null; then
     error "GID $DEV_UID is already used by another user."
     exit 1
 else
