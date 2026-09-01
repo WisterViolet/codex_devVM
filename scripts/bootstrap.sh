@@ -69,7 +69,7 @@ if id "$DEV_USER" > /dev/null; then
         exit 1
     fi
 elif getent passwd "$DEV_UID" > /dev/null; then
-    error "GID $DEV_UID is already used by another user."
+    error "UID $DEV_UID is already used by another user."
     exit 1
 else
     useradd --create-home --uid "$DEV_UID" --gid "$DEV_GID" --shell /bin/bash "$DEV_USER"
