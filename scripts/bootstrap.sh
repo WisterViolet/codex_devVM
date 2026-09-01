@@ -48,11 +48,31 @@ pacman -S --needed --noconfirm base-devel git openai-codex
 
 # Create dev user and group
 log "INFO" "===Phase3: Setup dev user==="
-if ! getent group "$DEV_GID" > /dev/null; then
-    groupadd --gid "$DEV_GID" "$DEV_USER"
+if getent group "$DEV_USER" > /dev/null; then
+    actual_gid="$(getent group "$DEV_USER" | cut -d: -f3)"
+
+    if [[ "$actual_gid" != "$DEV_GID" ]]; then
+        error "group \"$DEV_USER\" has unexpected GID."
+        exit 1
+    fi
+elif getent group "$DEV_GID" > /dev/null; then
+    error "GID $DEV_GID is already used by another group,"
+    exit 1
+else
+    groupadd --gid "$DEV_UID" "$DEV_GID"
 fi
-if ! id "$DEV_USER" > /dev/null 2>&1; then
-    useradd --create-home --uid "$DEV_UID" --gid "$DEV_GID" --shell /bin/bash "$DEV_USER"
+if id "$DEV_USER" > /dev/null; then
+    actual_uid="$(id -u "$DEV_USER")"
+
+    if [[ "$actual_uid" != "$DEV_UID" ]]; then
+        error "user \"$DEV_USER\" has unexpected GID,"
+        exit 1
+    fi
+elif id "$DEV_GID" > /dev/null; then
+    error "GID $DEV_UID is already used by another user."
+    exit 1
+else
+    useradd --create-home --uid "$DEV_UID" -gid "$DEV_GID" --shell /bin/bash "$DEV_USER"
 fi
 
 # Create workspace

@@ -12,8 +12,8 @@ AUTH_VOLUME="codex-auth"
 AUTH_DEVICE="codex-persist"
 AUTH_MOUNT="/mnt/codex-persist"
 
-SCRIPT_DIR="$(cd -- $(dirname -- "${BASH_SOURCE[0]}");pwd)"
-REPO_DIR="$(cd -- $SCRIPT_DIR/..;pwd)"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")";pwd)"
+REPO_DIR="$(cd -- "$SCRIPT_DIR/..;pwd")"
 VM_CONFIG="${REPO_DIR}/incus/codex-dev.yaml"
 
 BOOTSTRAP="${SCRIPT_DIR}/bootstrap.sh"
