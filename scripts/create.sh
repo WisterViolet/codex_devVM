@@ -20,6 +20,9 @@ BOOTSTRAP="${SCRIPT_DIR}/bootstrap.sh"
 WRAPPER="${SCRIPT_DIR}/codex-wrapper.sh"
 MIRRORLIST="/etc/pacman.d/mirrorlist"
 
+NETWORK="codexbr0"
+ACL="codex-isolation"
+
 mkdir -p "$HOME/.local/share/log"
 log_file="$HOME/.local/share/log/create_vm_$(date '+%Y%m%d_%H%M%S').log"
 
@@ -57,6 +60,19 @@ if ! incus storage volume show "$STORAGE_POOL" "$AUTH_VOLUME" > /dev/null 2>&1; 
     error "Volume '$AUTH_VOLUME' does not exist."
     exit 1
 fi
+
+if ! incus network show "$NETWORK" >/dev/null 2>&1; then
+    error "Error: network '$NETWORK' does not exist."
+    error "Run ./scripts/setup-network.sh first."
+    exit 1
+fi
+
+if ! incus network acl show "$ACL" >/dev/null 2>&1; then
+    error "Error: ACL '$ACL' does not exist."
+    error "Run ./scripts/setup-network.sh first."
+    exit 1
+fi
+
 
 # Create VM
 log "INFO" "===Phase1: Create Archlinux VM==="

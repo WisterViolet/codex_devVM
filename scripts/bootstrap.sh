@@ -40,6 +40,8 @@ log "INFO" "===Bootstrap start==="
 
 # Package update
 log "INFO" "===Phase1: Update packages==="
+pacman-key --init
+pacman-key --populate archlinux
 pacman -Syu --noconfirm
 
 # Dev package install

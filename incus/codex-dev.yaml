@@ -10,7 +10,7 @@ devices:
   eth0:
     type: nic
     name: eth0
-    network: incusbr0
+    network: codexbr0
 
   root:
     type: disk
