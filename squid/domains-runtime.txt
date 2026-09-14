@@ -1,0 +1,8 @@
+# Github
+.github.com
+.githubusercontent.com
+
+# CodeX
+.openai.com
+.chatgpt.com
+

@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Enviroments
+PROXY="http://10.200.200.1:3128"
+export HTTP_PROXY="$PROXY"
+export HTTPS_PROXY="$PROXY"
+
+export http_proxy="$PROXY"
+export https_proxy="$PROXY"
+
+export NO_PROXY="localhost,127.0.0.1"
+export no_proxy="$NO_PROXY"
+
 # Const Variables
 PERSIST="/mnt/codex-persist"
 LOCAL="$HOME/.codex"

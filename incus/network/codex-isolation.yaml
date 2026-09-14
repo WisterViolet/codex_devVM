@@ -4,12 +4,9 @@ config: {}
 ingress: []
 
 egress:
-    - action: reject
-      state: enabled
-      description: Block private, CGNAT and link-local IPv4 ranges
-      destination: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,169.254.0.0/16
-
     - action: allow
       state: enabled
-      description: Allow public IPv4 Internet access
-      destination: 0.0.0.0/0
+      description: Allow Codex HTTP proxy
+      destination: 10.200.200.1
+      protocol: tcp
+      destination_port: "3128"

@@ -11,6 +11,9 @@ DEV_GID="1000"
 # VM Workspace
 WORKSPACE="/workspace"
 
+# Proxy
+PROXY="http://10.200.200.1:3128"
+
 log_file="/var/log/bootstrap_$(date '+%Y%m%d_%H%M%S').log"
 
 # Functions
@@ -40,12 +43,19 @@ log "INFO" "===Bootstrap start==="
 
 # Package update
 log "INFO" "===Phase1: Update packages==="
+
 pacman-key --init
 pacman-key --populate archlinux
+
+
+http_proxy="$PROXY" \
+https_proxy="$PROXY" \
 pacman -Syu --noconfirm
 
 # Dev package install
 log "INFO" "===Phase2: Install development packages==="
+http_proxy="$PROXY" \
+https_proxy="$PROXY" \
 pacman -S --needed --noconfirm base-devel git openai-codex
 
 # Create dev user and group
