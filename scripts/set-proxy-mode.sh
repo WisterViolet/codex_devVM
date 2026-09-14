@@ -60,8 +60,8 @@ sudo install \
     /etc/squid/codex-allowed-domains.txt
 
 
-squid -k check
-squid -k parse
-squid -k reconfigure
+sudo squid -k check
+sudo squid -k parse
+sudo squid -k reconfigure
 
 log "INFO" "===Proxy mode: $MODE==="

@@ -53,7 +53,7 @@ restore(){
 
 # Save authentification and config to persist volume
 save(){
-    for file in auth.json config.toml; do
+    for file in auth.json; do
         [[ -f "$LOCAL/$file" ]] || continue
 
         tmp=$(mktemp "$PERSIST/.$file.$$.XXXXXX")
