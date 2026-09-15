@@ -43,7 +43,7 @@ error(){
 
 # Restore authentification and config from persist volume
 restore(){
-    for file in auth.json config.toml; do
+    for file in auth.json; do
         if [[ ! -f "$LOCAL/$file" && -f "$PERSIST/$file" ]]; then
             cp "$PERSIST/$file" "$LOCAL/$file"
             chmod 600 "$LOCAL/$file"

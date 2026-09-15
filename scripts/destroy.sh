@@ -54,7 +54,7 @@ if [[ "$STATE" == "RUNNING" ]]; then
             LOCAL="$HOME/.codex"
             PERSIST="/mnt/codex-persist"
 
-            for file in auth.json config.toml; do
+            for file in auth.json; do
                 [ -f "$LOCAL/$file" ] || continue
 
                 tmp="$(mktemp  $PERSIST/.$file.$$.XXXXXX)"
