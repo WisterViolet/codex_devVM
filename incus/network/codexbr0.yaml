@@ -7,5 +7,7 @@ config:
     ipv6.address: none
     security.acls: codex-isolation
 
+    raw.dnsmasq: port=0
+
 security.acls.default.ingress.action: reject
 security.acls.default.egress.action: reject
