@@ -50,8 +50,8 @@ error(){
     echo "$timestamp [ERROR] [$$] $message" | tee -a "$log_file" >&2
 }
 
-PROXY_PROVISIONING=true
-restore_runtime_proxy() {
+
+rollback() {
     if [[ "$PROXY_PROVISIONING" == true ]]; then
         log "INFO" "===Restoring proxy to runtime mode==="
 
@@ -59,8 +59,21 @@ restore_runtime_proxy() {
             error "Failed to restore proxy to runtime mode."
         fi
     fi
+    if [[ "$INPROGRESS_VM" == true ]]; then
+        if [[ "$INPROGRESS_VM" == true ]]; then
+            log "INFO" "===Detach Volume==="
+            if ! incus storage volume detach "$STORAGE_POOL" "$AUTH_VOLUME" "$VM_NAME" "$AUTH_DEVICE" "$AUTH_MOUNT"; then
+                error "Failed to detach volume."
+            fi
+        fi
+        log "INFO" "===Delete VM==="
+        if ! incus delete "$VM_NAME"; then
+            error "Failed to delete VM."
+        fi
+    fi
+
 }
-trap restore_runtime_proxy EXIT
+trap rollback EXIT
 
 # Check VM prerequiies
 log "INFO" "===Phase0: Check prerequiies==="
@@ -109,6 +122,7 @@ log "INFO" "===Phase1: Setup HTTP proxy==="
 log "INFO" "===Phase2: Switch proxy to provisioning mode==="
 
 "$SET_PROXY_MODE" provisioning
+PROXY_PROVISIONING=true
 
 # Create VM
 log "INFO" "===Phase3: Create Archlinux VM==="
@@ -122,6 +136,7 @@ for _ in $(seq 1 60); do
     fi
     sleep 1
 done
+INPROGRESS_VM=true
 
 if ! incus exec "$VM_NAME" -- true > /dev/null 2>&1;then
     error "VM did not become ready."
@@ -156,6 +171,7 @@ log "INFO" "===Phase7: Attach volume==="
 incus stop "$VM_NAME"
 
 incus storage volume attach "$STORAGE_POOL" "$AUTH_VOLUME" "$VM_NAME" "$AUTH_DEVICE" "$AUTH_MOUNT"
+INPROGRESS_VOLUME=true
 
 incus start "$VM_NAME"
 
@@ -175,9 +191,12 @@ log "INFO" "===Phase8: Switch proxy to runtime mode==="
 
 "$SET_PROXY_MODE" runtime
 PROXY_PROVISIONING=false
-trap - EXIT
 
 log "INFO" "===VM created successfully.==="
+
+INPROGRESS_VM=false
+INPROGRESS_VOLUME=false
+trap - EXIT
 
 incus list "$VM_NAME"
 
