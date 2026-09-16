@@ -36,15 +36,19 @@ error(){
 
 if [[ ! -f "$SQUID_CONFIG" ]]; then
     error "$SQUID_CONFIG not found."
+    exit 1;
 fi
 
 if [[ ! -f "$RUNTIME_DOMAINS" ]]; then
     error "$RUNTIME_DOMAINS not found."
+    exit 1;
 fi
 
 log "INFO" "===Phase1: Installing Squid configuration==="
 
-cp /etc/squid/squid.conf /etc/squid/squid.conf_bck
+if [[ -f /etc/squid/squid.conf && ! -f /etc/squid/squid.conf_bck ]]; then
+    sudo cp /etc/squid/squid.conf /etc/squid/squid.conf_bck
+fi
 
 sudo install \
     --owner=root \

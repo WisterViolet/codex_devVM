@@ -48,6 +48,7 @@ esac
 
 if [[ ! -f "$DOMAIN_FILE" ]]; then
     error "Error: $DOMAIN_FILE not found."
+    exit 1;
 fi
 
 log "INFO" "===Phase1: Switching Squid policy to $MODE==="

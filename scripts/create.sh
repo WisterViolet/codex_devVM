@@ -18,6 +18,8 @@ VM_CONFIG="${REPO_DIR}/incus/codex-dev.yaml"
 
 BOOTSTRAP="${SCRIPT_DIR}/bootstrap.sh"
 WRAPPER="${SCRIPT_DIR}/codex-wrapper.sh"
+SETUP_PROXY="${SCRIPT_DIR}/setup-proxy.sh"
+SET_PROXY_MODE="${SCRIPT_DIR}/set-proxy-mode.sh"
 MIRRORLIST="/etc/pacman.d/mirrorlist"
 
 NETWORK="codexbr0"
@@ -48,6 +50,18 @@ error(){
     echo "$timestamp [ERROR] [$$] $message" | tee -a "$log_file" >&2
 }
 
+PROXY_PROVISIONING=true
+restore_runtime_proxy() {
+    if [[ "$PROXY_PROVISIONING" == true ]]; then
+        log "INFO" "===Restoring proxy to runtime mode==="
+
+        if ! "$SET_PROXY_MODE" runtime; then
+            error "Failed to restore proxy to runtime mode."
+        fi
+    fi
+}
+trap restore_runtime_proxy EXIT
+
 # Check VM prerequiies
 log "INFO" "===Phase0: Check prerequiies==="
 
@@ -73,9 +87,31 @@ if ! incus network acl show "$ACL" >/dev/null 2>&1; then
     exit 1
 fi
 
+if [[ ! -x "$SETUP_PROXY" ]]; then
+    error "Proxy setup script not found or not executable: $SETUP_PROXY"
+    exit 1
+fi
+
+if [[ ! -x "$SET_PROXY_MODE" ]]; then
+    error "Proxy mode script not found or not executable: $SET_PROXY_MODE"
+    exit 1
+fi
+
+if ! command -v squid >/dev/null 2>&1; then
+    error "Squid is not installed on the host."
+    exit 1
+fi
+
+log "INFO" "===Phase1: Setup HTTP proxy==="
+
+"$SETUP_PROXY"
+
+log "INFO" "===Phase2: Switch proxy to provisioning mode==="
+
+"$SET_PROXY_MODE" provisioning
 
 # Create VM
-log "INFO" "===Phase1: Create Archlinux VM==="
+log "INFO" "===Phase3: Create Archlinux VM==="
 
 incus launch "$IMAGE" "$VM_NAME" --vm --no-profiles < "$VM_CONFIG"
 
@@ -93,7 +129,7 @@ if ! incus exec "$VM_NAME" -- true > /dev/null 2>&1;then
 fi
 
 # Copy mirrorlist and bootstrap to VM
-log "INFO" "===Phase2: Install Mirrorlist and Bootstrap==="
+log "INFO" "===Phase4: Install Mirrorlist and Bootstrap==="
 
 incus file push "$BOOTSTRAP" "$VM_NAME/root/bootstrap.sh"
 incus file push "$MIRRORLIST" "$VM_NAME/etc/pacman.d/mirrorlist"
@@ -101,12 +137,12 @@ incus file push "$MIRRORLIST" "$VM_NAME/etc/pacman.d/mirrorlist"
 incus exec "$VM_NAME" -- chmod 700 /root/bootstrap.sh
 
 # Bootstrapping
-log "INFO" "===Phase3: Bootstrapping==="
+log "INFO" "===Phase5: Bootstrapping==="
 
 incus exec "$VM_NAME" -- /root/bootstrap.sh
 
 # Copy codex-wrapper
-log "INFO" "===Phase4: Install Codex wrapper"
+log "INFO" "===Phase6: Install Codex wrapper"
 incus exec "$VM_NAME" -- mkdir -p /home/dev/.local/bin/
 incus exec "$VM_NAME" -- chown -R dev:dev /home/dev/.local
 incus file push "$WRAPPER" "$VM_NAME/home/dev/.local/bin/codex"
@@ -115,7 +151,7 @@ incus exec "$VM_NAME" -- chown dev:dev /home/dev/.local/bin/codex
 incus exec "$VM_NAME" -- chmod 755 /home/dev/.local/bin/codex
 
 # Attach Volume
-log "INFO" "===Phase5: Attach volume==="
+log "INFO" "===Phase7: Attach volume==="
 
 incus stop "$VM_NAME"
 
@@ -135,6 +171,11 @@ if ! incus exec "$VM_NAME" -- true > /dev/null 2>&1;then
     error "VM did not become ready."
     exit 1
 fi
+log "INFO" "===Phase8: Switch proxy to runtime mode==="
+
+"$SET_PROXY_MODE" runtime
+PROXY_PROVISIONING=false
+trap - EXIT
 
 log "INFO" "===VM created successfully.==="
 

@@ -40,12 +40,12 @@ error(){
 log "INFO" "===Phase0: Check configuration files==="
 
 if [[ ! -f "$NETWORK_CONFIG" ]]; then
-    echo "Error: network configuration not found: $NETWORK_CONFIG" >&2
+    error "Network configuration not found: $NETWORK_CONFIG"
     exit 1
 fi
 
 if [[ ! -f "$ACL_CONFIG" ]]; then
-    echo "Error: ACL configuration not found: $ACL_CONFIG" >&2
+    error "ACL configuration not found: $ACL_CONFIG"
     exit 1
 fi
 
