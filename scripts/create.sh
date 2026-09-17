@@ -5,12 +5,13 @@ set -euo pipefail
 VM_NAME="codex-dev-vm"
 IMAGE="images:archlinux/current"
 
-
-
 STORAGE_POOL="default"
 AUTH_VOLUME="codex-auth"
 AUTH_DEVICE="codex-persist"
 AUTH_MOUNT="/mnt/codex-persist"
+USERNAME="dev"
+DEV_UID="1000"
+DEV_GID="1000"
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")";pwd)"
 REPO_DIR="$(cd -- "$SCRIPT_DIR/..";pwd)"
@@ -182,6 +183,9 @@ if ! incus exec "$VM_NAME" -- true > /dev/null 2>&1;then
     error "VM did not become ready."
     exit 1
 fi
+
+incus exec "$VM_NAME" -- bash -c 'chown -R "$DEV_UID":"$DEV_GID" "$AUTH_MOUNT"; chmod -R 700 "$AUTH_MOUNT"'
+
 log "INFO" "===Phase8: Switch proxy to runtime mode==="
 
 "$SET_PROXY_MODE" runtime
@@ -193,4 +197,3 @@ INPROGRESS_VM=false
 trap - EXIT
 
 incus list "$VM_NAME"
-
