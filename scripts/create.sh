@@ -61,9 +61,11 @@ rollback() {
         fi
     fi
     if [[ "$INPROGRESS_VM" == true ]]; then
-        log "INFO" "===Delete VM==="
-        if ! incus delete --force "$VM_NAME"; then
-            error "Failed to delete VM."
+        if incus info "$VM_NAME" > /dev/null 2>&1; then
+            log "INFO" "===Delete incomplete VM==="
+            if ! incus delete --force "$VM_NAME"; then
+                error "Failed to delete VM."
+            fi
         fi
     fi
 }
@@ -121,8 +123,8 @@ PROXY_PROVISIONING=true
 # Create VM
 log "INFO" "===Phase3: Create Archlinux VM==="
 
-incus launch "$IMAGE" "$VM_NAME" --vm --no-profiles < "$VM_CONFIG"
 INPROGRESS_VM=true
+incus launch "$IMAGE" "$VM_NAME" --vm --no-profiles < "$VM_CONFIG"
 
 # Wait VM launch
 for _ in $(seq 1 60); do
@@ -165,7 +167,6 @@ log "INFO" "===Phase7: Attach volume==="
 incus stop "$VM_NAME"
 
 incus storage volume attach "$STORAGE_POOL" "$AUTH_VOLUME" "$VM_NAME" "$AUTH_DEVICE" "$AUTH_MOUNT"
-INPROGRESS_VOLUME=true
 
 incus start "$VM_NAME"
 
