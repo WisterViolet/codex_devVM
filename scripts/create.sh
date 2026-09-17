@@ -184,7 +184,12 @@ if ! incus exec "$VM_NAME" -- true > /dev/null 2>&1;then
     exit 1
 fi
 
-incus exec "$VM_NAME" -- bash -c 'chown -R "$DEV_UID":"$DEV_GID" "$AUTH_MOUNT"; chmod -R 700 "$AUTH_MOUNT"'
+incus exec "$VM_NAME" -- chown -R "$DEV_UID":"$DEV_GID" "$AUTH_MOUNT"
+incus exec "$VM_NAME" -- chmod -R 700 "$AUTH_MOUNT"
+
+if incus exec "VM_NAME" -- test -f "$AUTH_MOUNT/auth.json"; then 
+    incus exec "$VM_NAME" -- chmod -R 600 "$AUTH_MOUNT/auth.json"
+fi
 
 log "INFO" "===Phase8: Switch proxy to runtime mode==="
 
