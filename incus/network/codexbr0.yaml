@@ -9,5 +9,5 @@ config:
 
     raw.dnsmasq: port=0
 
-security.acls.default.ingress.action: reject
-security.acls.default.egress.action: reject
+    security.acls.default.ingress.action: reject
+    security.acls.default.egress.action: reject
