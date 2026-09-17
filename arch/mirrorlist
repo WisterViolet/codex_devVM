@@ -1,0 +1,6 @@
+##
+## Arch Linux repository mirrorlist
+## Generated on 2026-05-02
+##
+
+Server = https://cloudflaremirrors.com/archlinux/$repo/os/$arch

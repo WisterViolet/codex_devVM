@@ -21,7 +21,7 @@ BOOTSTRAP="${SCRIPT_DIR}/bootstrap.sh"
 WRAPPER="${SCRIPT_DIR}/codex-wrapper.sh"
 SETUP_PROXY="${SCRIPT_DIR}/setup-proxy.sh"
 SET_PROXY_MODE="${SCRIPT_DIR}/set-proxy-mode.sh"
-MIRRORLIST="/etc/pacman.d/mirrorlist"
+MIRRORLIST="${REPO_DIR}/arch/mirrorlist"
 
 NETWORK="codexbr0"
 ACL="codex-isolation"
