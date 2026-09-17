@@ -187,7 +187,7 @@ fi
 incus exec "$VM_NAME" -- chown -R "$DEV_UID":"$DEV_GID" "$AUTH_MOUNT"
 incus exec "$VM_NAME" -- chmod -R 700 "$AUTH_MOUNT"
 
-if incus exec "VM_NAME" -- test -f "$AUTH_MOUNT/auth.json"; then 
+if incus exec "$VM_NAME" -- test -f "$AUTH_MOUNT/auth.json"; then
     incus exec "$VM_NAME" -- chmod -R 600 "$AUTH_MOUNT/auth.json"
 fi
 
