@@ -9,3 +9,10 @@
 # Arch Repo
 .archlinux.org
 cloudflaremirrors.com
+mirror.aria-on-the-planet.es
+mirrors.cat.net
+jp.mirrors.cicku.me
+ftp.jaist.ac.jp
+www.miraa.jp
+mirror.rain.ne.jp
+ftp.yz.yamagata-u.ac.jp
