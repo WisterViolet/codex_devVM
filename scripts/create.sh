@@ -22,6 +22,8 @@ WRAPPER="${SCRIPT_DIR}/codex-wrapper.sh"
 SETUP_PROXY="${SCRIPT_DIR}/setup-proxy.sh"
 SET_PROXY_MODE="${SCRIPT_DIR}/set-proxy-mode.sh"
 MIRRORLIST="${REPO_DIR}/arch/mirrorlist"
+SUDOERS="${REPO_DIR}/arch/00-allowpacman"
+ENVIRONMENT="${REPO_DIR}/scripts/vm-proxy.sh"
 
 NETWORK="codexbr0"
 ACL="codex-isolation"
@@ -145,8 +147,13 @@ log "INFO" "===Phase4: Install Mirrorlist and Bootstrap==="
 
 incus file push "$BOOTSTRAP" "$VM_NAME/root/bootstrap.sh"
 incus file push "$MIRRORLIST" "$VM_NAME/etc/pacman.d/mirrorlist"
+incus file push "$SUDOERS" "$VM_NAME/etc/sudoers.d/00-allowpacman"
+incus file push "$ENVIRONMENT" "$VM_NAME/etc/profile.d/vm-proxy.sh"
 
 incus exec "$VM_NAME" -- chmod 700 /root/bootstrap.sh
+incus exec "$VM_NAME" -- chmod 644 /etc/profile.d/vm-proxy.sh
+incus exec "$VM_NAME" -- chown 0:0 /etc/sudoers.d/00-allowpacman
+incus exec "$VM_NAME" -- chmod 440 /etc/sudoers.d/00-allowpacman
 
 # Bootstrapping
 log "INFO" "===Phase5: Bootstrapping==="
