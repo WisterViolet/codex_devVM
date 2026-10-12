@@ -1,0 +1,1 @@
+dev ALL=NOPASSWD: /usr/bin/pacman
